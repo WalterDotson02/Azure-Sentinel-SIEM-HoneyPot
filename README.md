@@ -1,4 +1,4 @@
-# Failed-RDP-Sentinel
+# Azure Sentinel SIEM HoneyPot
 
 ![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/56ec5c86bafbb2068c9ff3f77360f91ff3fece60/Images/HoneyPot.png)
 
