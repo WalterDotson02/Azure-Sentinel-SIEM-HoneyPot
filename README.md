@@ -1,4 +1,7 @@
 # Failed-RDP-Sentinel
+
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/HoneyPot.png)
+
 Demonstration of integrating and configuring Azure Sentinel as a SIEM solution with real-world use cases for monitoring, threat detection, and incident response
 
 <h2>Description</h2>
@@ -27,6 +30,8 @@ SIEM, or Security Information and Event Management System, is a solution designe
 
 
 <h2>Step 2: Configure Honeypot VM</h2>
+
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Create%20VM.png)
 
 <h1>Basics</h1>
 
@@ -61,6 +66,8 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Confirm licensing
 * Select <b>Next : Disks ></b>
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Configure%20VM%20Settings%201.png)
+
 <h1>Disks</h1>
 
 * Leave all defaults
@@ -80,6 +87,8 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Name: Anything (ALLOW_ALL_INBOUND)
 * Select Review + create
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Configure%20VM%20Settings%202.png)
+
 <h2>Step 3: Create Log Analytics Workspace</h2>
 
 * Search for "Log analytics workspaces"
@@ -89,10 +98,14 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Add to same region (East US 2)
 * Select Review + create
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Create%20Log%20Analytics%20Workspace.png)
+
 <h2>Step 4: Setup Microsoft Defender for Cloud</h2>
 
 * Search for "Microsoft Defender for Cloud"
 * Scroll down to "Environment settings" > subscription name > log analytics workspace name (log-honeypot)
+
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Microsoft%20Defender%20for%20Cloud%20Environment%20settings.png)
 
 <b>Settings | Defender plans</b>
 
@@ -101,6 +114,7 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * SQL servers on machines: OFF
 * Hit Save
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Defender%20Settings.png)
 <b>Settings | Data Collection</b>
 
 * Select "All Events"
@@ -112,12 +126,16 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Select workspace name (log-honeypot) > "Virtual machines" > virtual machine name (honeypot-vm)
 * Click <b>Connect</b>
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Connect%20LAW%20to%20VM.png)
+
 <h2>Step 6: Setup Microsoft Sentinel</h2>
 
 * Search for "Microsoft Sentinel"
 * Click <b>Create Microsoft Sentinel</b>
 * Select Log Analytics workspace name (honeypot-log)
 * Click <b>Add</b>
+
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Add%20Sentinel%20to%20workspace.png)
 
 <h2>Step 7: Turn Virtual Machine's Firewall OFF</h2>
 
@@ -132,6 +150,8 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Hit <b>Apply</b> and <b>Ok</b>
 * Ping VM via Host's command line to make sure it is reachable ping -t <VM IP>
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/defender_off.png)
+
 <h2>Step 8: Automate Security Log Exporter</h2>
 
 * In VM open Powershell ISE
@@ -140,12 +160,15 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Select <b>New Script</b> in Powershell ISE and paste script
 * Save to Desktop and give it a name (Log_Exporter)
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/powershell_script.png)
+
 * Make an account with [Free IP Geolocation API and Accurate IP Lookup Database](https://ipgeolocation.io/)
   > This account is free for 1000 API calls per day. Paying 15.00$ will allow 150,000 API calls per month.
 * Copy API key once logged in and paste into script line 2: $API_KEY = "<API key>"
 * Hit <b>Save</b>
 * Run the PowerShell ISE script (Green play button) in the virtual machine to continuously produce log data
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/ipgeolocation.png)
   > The script will export data from the Windows Event Viewer to then import into the IP Geolocation service. It will then extract the latitude and longitude and then create a new log called failed_rdp.log in the following location: C:\ProgramData\failed_rdp.log
 
 <h2>Step 9: Create Custom Log in Log Analytics Workspace</h2>
@@ -175,6 +198,8 @@ SIEM, or Security Information and Event Management System, is a solution designe
 * Name and describe the custom log (FAILED_RDP_WITH_GEO) before pressing the <b>Next</b> button
 * Click Create
 
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/custom_log.png)
+
 <h2>Step 10: Query + Extract Fields from Custom Log</h2>
 
 * Navigate to the newly established workspace (honeypot-law) in Log Analytics Workspaces -> Logs
@@ -198,6 +223,8 @@ FAILED_RDP_WITH_GEO_CL
 | summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude
 ```
 > Kusto Query Language (KQL) is used to query and extract logs from data stored in Azure Log Analytics or Azure Data Explorer. KQL is a powerful and expressive query language that allows you to perform advanced data analysis, filtering, aggregation, and visualization. With some practice composing questions and simple instructions, the language is meant to be simple to read and use.
+
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/LAW%20KQL%20script%20for%20log.png)
 
 <h2>Step 11: Create World Attack Map in Microsoft Sentinel</h2>
 
@@ -225,6 +252,8 @@ FAILED_RDP_WITH_GEO_CL
 * When results appear, select <b>Map</b> from the <b>Visualization</b> drop-down box.
 * Choose <b>Map Settings</b> to make additional adjustments
   > Most settings should be auto-configured from the script above
+  
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Sentinel%20KQL%20script.png)
 
 <b>Layout Settings</b>
 
@@ -248,10 +277,16 @@ FAILED_RDP_WITH_GEO_CL
 * Save as "Failed RDP International Map" in the same region and under the resource group (honeypot-lab)
 * Keep refreshing the map to show more inbound failed RDP attacks
   > Note: Only unsuccessful RDP attempts will be shown on the map, not any additional attacks the VM might be facing.
+  
+  ![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Failed%20RDP%20Map.png)
 
   > Event Viewer showcasing failed RDP logon efforts. Event ID: 4625
+  
+  ![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Event%20Manager.png)
 
   > Data processing from a custom Poweshell script using a third party API
+  
+  ![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/ISE%20failed%20attempts.png)
 
 <h2>Step 12: Shut Down Resources</h2>.
 
@@ -261,6 +296,8 @@ FAILED_RDP_WITH_GEO_CL
 * Key in the name of the resource group (honeypot-lab) to verify removal of resources
 * Select the <b>Apply force delete for selected Virtual machines and Virtual machine scale sets</b> box
 * Click <b>Delete</b>
+
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/Screenshot%202025-01-14%20092133.png)
 
 > Resources will use free credits if they are not eliminated, and costs may start to accrue.
 
