@@ -1,6 +1,6 @@
 # Failed-RDP-Sentinel
 
-![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/main/Images/HoneyPot.png)
+![image](https://github.com/WalterDotson02/Failed-RDP-Sentinel/blob/56ec5c86bafbb2068c9ff3f77360f91ff3fece60/Images/HoneyPot.png)
 
 Demonstration of integrating and configuring Azure Sentinel as a SIEM solution with real-world use cases for monitoring, threat detection, and incident response
 
